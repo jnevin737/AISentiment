@@ -1,7 +1,6 @@
-*.ss~
-*.ss#*
-.#*.ss
-
-*.scm~
-*.scm#*
-.#*.scm
+Presentation.html
+Presentation.qmd
+Table.html
+custom.scss
+/stack-overflow-developer-survey-2024/survey_results_schema_edit.csv
+stack-overflow-developer-survey-2024
