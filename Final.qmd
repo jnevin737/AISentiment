@@ -1,0 +1,353 @@
+
+---
+title: "Perceived AI Threat by Coders"
+author: "Nevin Jacob"
+bibliography: sources.bib
+execute:
+  warning: false
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+include-in-header: 
+  text: |
+    \usepackage{fvextra}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+    \usepackage{array}
+    \usepackage{longtable}
+    \newcommand\textstyleStrongEmphasis[1]{\textbf{#1}}
+    \makeatletter
+    \newcommand\arraybslash{\let\\\@arraycr}
+---
+
+# Abstract
+As AI continues to increase in capabilities it is often heralded as a replacement for many jobs. Particularly, many believe AI will replace entry-level software engineering jobs, with some companies requiring its use for their employees. The veracity of these claims may be estimated by understanding how much the users of such tools believe their job to be under threat. Additionally an understanding of how this sentiment can vary across countries can provide insight into the underlying reasoning fo such sentiment. Fitting a multilevel model to survey data from stack overflow reveals that more more professional coding slightly reduces the likelihood of believing AI to be a threat to one's job. Additionally respondents in similar geographic regions appear to produce similar levels of response likelihood. 
+
+# Introduction
+AI, a term typically referring to large language models (LLMs) is often characterized as an immense threat to many entry-level jobs. Some companies go in so far as to mandate its use. In particular for software engineering, AI itself is already able to generate code via prompt. This raises the question as to whether software engineering jobs are safe from being replaced. One potential way of measuring this is via proxy: by asking understanding why developers may or may not feel that AI is a threat to their job, this may shed light on both the plausibility of these claims and also insight into new job niches. This paper first assesses the validity of claims relating to AIs capabilities and competence, then proceeds to understand what influences coders to believe AI is a threat, as well as how that differs between countries.
+
+# Literature Review / Hypothesis
+AI is certainly capable, but how much so? In one study it was found that undergraduate students viewed AI feedback as better than human feedback[@zhang_evaluating_2025]. This indicates that at least in terms of giving feedback AI is very well equipped, so perhaps has use in response to coding problems or review on a high level. This speaks to the general capabilities of AI perhaps but what about opinion on it and its use. One study before the proliferation of LLMs recently found that people were generally positive about AI as a baseline measurement[@fast_long-term_2016]. In a slight contrast to this another paper found that people actually have a general amount of concern regarding AI and additionally view it as both superior to and more impartial than humans[@araujo_ai_2020]. This would support the assertion that AI may be a threat to not only coder's job but many other jobs. A more moderate finding indicates that AI is too primitive to replace jobs but automation itself has in fact replaced jobs [@thatikonda_implications_nodate]. There is also evidence to indicate. Despite somewhat conflicting evidence it is clear that there is some sentiment by various groups towards AI, and an explaining factor is that increasing education about AI results in less fear about it [@brauner_mapping_2024]. Logically it follows then that where AI is more prevalent people will be less likely to view AI as a threat. The hypotheses then of this paper are as follows:
+A:
+* Coders with more experience will be less likely to view AI as a threat.
+B: 
+* Coders from countries where AI development and use is more prevalent will be less likely to view AI as a threat.
+
+# Preprocessing
+```{r}
+#| output: false
+
+rm(list=ls())
+library(tidyverse)
+library(sjstats)
+library(haven)
+library(lme4) #For Estimating MLM 
+library(arm) #For Retrieving Random Effect SEs in a MLM 
+library(modelsummary) #For Displaying MLM 
+library(ggplot2)
+library(stargazer)
+library(janitor) #Quick cleaning of variable names
+library(ggeffects)
+library(skimr)
+library(sjPlot)
+library(glmmTMB)
+library(glue)
+library(tibble)
+library(knitr)
+library(html2latex)
+data <- read.csv("~/Documents/School/790Q/FinalProject/stack-overflow-developer-survey-2024/survey_results_public.csv")
+```
+
+```{r}
+data <- clean_names(data)
+```
+
+```{r}
+data_clean <- data %>%
+  dplyr::select(
+    age,
+    ed_level,
+    country,
+    years_code_pro,
+    ai_sent,
+    ai_complex,
+    ai_threat
+  )
+```
+
+```{r}
+data_clean <- data_clean %>%
+  filter(!is.na(ai_threat), ai_threat != "I'm not sure")
+```
+
+```{r}
+ai_sent_map <- c(
+  "Very favorable" = 5, 
+  "Favorable" = 4,
+  "Indifferent" = 3,
+  "Unfavorable" = 2,
+  "Very unfavorable" = 1,
+  "Unsure" = NA
+)
+ai_complex_map <- c(
+  "Very well at handling complex tasks" = 5,
+  "Good, but not great at handling complex tasks" = 4,
+  "Neither good or bad at handling complex tasks" = 3,
+  "Bad at handling complex tasks" = 2,
+  "Very poor at handling complex tasks" = 1
+)
+ai_threat_map <- c(
+  "Yes" = 1,
+  "No" = 0
+)
+```
+
+```{r}
+non_responses <- c(
+  "Prefer not to say",
+  "Something else",
+  "I don't know"
+)
+
+data_edit <- data_clean %>%
+  mutate(ai_sent = as.integer(ai_sent_map[ai_sent])) %>%
+  mutate(ai_complex = as.integer(ai_complex_map[ai_complex])) %>%
+  mutate(ai_threat = as.integer(ai_threat_map[ai_threat])) %>%
+  mutate(across(where(is.character), ~ ifelse(. %in% non_responses, NA, .))) %>%
+  mutate(years_code_pro = if_else(years_code_pro == "Less than 1 year", "0", years_code_pro))
+
+data_edit$years_code_pro <- as.numeric(data_edit$years_code_pro)
+```
+
+```{r}
+# Fix Factor Order
+data_edit$age <- factor(
+  data_edit$age,
+  levels = c(
+    "Under 18 years old",
+    "18-24 years old",
+    "25-34 years old",
+    "35-44 years old",
+    "45-54 years old",
+    "55-64 years old",
+    "65 years or older"
+  )
+)
+
+data_edit$ed_level <- factor(
+  data_edit$ed_level,
+  levels = c(
+    "Primary/elementary school",
+    "Secondary school (e.g. American high school, German Realschule or Gymnasium, etc.)",
+    "Some college/university study without earning a degree",
+    "Associate degree (A.A., A.S., etc.)",
+    "Bachelor’s degree (B.A., B.S., B.Eng., etc.)",
+    "Master’s degree (M.A., M.S., M.Eng., MBA, etc.)",
+    "Professional degree (JD, MD, Ph.D, Ed.D, etc.)"
+  )
+)
+```
+
+# Research Design
+
+## Data Overview
+The data is the Stack Overflow 2024 developer survey. This survey is conducted yearly and administered to stack overflow users. This means the sample is explicitly contained to stack overflow. That does not necessarily denote professional developers however, and also covered a wide range of anyone who codes. It includes questions about preferred tooling, enjoyment of career and work, and challenges professional coders face. I expect the sample is supposed to generalize to coders, with a general focus on software engineering vs say data workers based on the questions asked. 
+
+## Variable Overview
+DV: This is whether coders view AI as a threat or not to their current job. It has three options: yes, no, and I'm not sure, with the latter filtered out as a non substantial answer. Since part of the hypothesis proposed here is how the DV varies by country and there are a lot of countries multilevel modeling will be used to estimate the effects of the IVs on the DV. Both an OLS and Logit model will be fit and the better model will be used for interpretation. OLS will be used since it is the traditional and more easily interpretable choice and Logit because the DV is coded as binary after removal of insubstantial responses. 
+
+* IVs:
+  + Years of coding professionally: A continuous variable denoting how long one has been coding professionally
+* Controls:
+  + Education Level: categorical / factor ranging from primary school to professional degrees; demographic control
+  + Age: categorical / factor, youngest group is <18 oldest is >65; demographic control
+  + AI Sentiment: Likert scale 1-5 (actually 6 but unsubstantial). Stance on using AI tools in workflow, higher is more favorable, don't want this as a component of years coding
+  + AI Complexity: Likert scale 1-5. How well one respondent trusts AI for complex tasks higher is more favorable; included for the same reason as AI sentiment
+* Grouping:
+  + Country: country of residence for respondent
+
+Notably, the responses for the DV are incredibly imbalanced
+```{r}
+barplot(table(data_edit$ai_threat), ylab = "Count", xlab = "Response", names.arg = c("No", "Yes"))
+title("Response to 'Do you believe AI is a threat to your current job'")
+```
+```{r}
+#| echo: false
+glue("Mean of AI Threat Responses {mean(data_edit$ai_threat)}")
+glue("Variance of AI Threat Responses {var(data_edit$ai_threat)}")
+glue("Number of countries in sample: {length(unique(data_edit$country))}")
+```
+
+
+```{r}
+skim(data_edit)
+```
+
+```{r}
+icc_mod_lm <- lmer(
+  ai_threat ~ +
+    (1 |country),
+  data = data_edit
+)
+```
+
+```{r}
+icc_mod_logit <- glmer(
+  ai_threat ~ +
+    (1 |country),
+  data = data_edit,
+  family = binomial(link = "logit")
+)
+```
+
+## Interclass Correlation
+```{r}
+tab_model(
+  transform = NULL,
+  icc_mod_lm,
+  icc_mod_logit,
+  title = "ICC Models",
+  dv.labels = c("Linear Model", "Logit Model"),
+  show.icc = T,
+  file = "temp1.html"
+)
+```
+
+![](plot1.png)
+
+```{r}
+#| eval: false
+#| echo: false
+
+
+html2pdf(filename = "temp1.html", 
+  table_width = 13, 
+   silent = T, 
+   style = TRUE, 
+   build_pdf = TRUE, 
+   clean = TRUE,
+   name_table = "table1")
+
+tex2Rmd("temp1.tex")
+```
+
+
+With extremely low interclass correlation (ICC) values, a varying intercept is what will be used for the multilevel model. Low ICC indicates that there isn't much variance between groupings indicating MLM isn't strictly necessary, however using it will make country differences much more interpretable. 
+
+## Model Fitting
+```{r}
+lm_mod <- lmer(
+  ai_threat ~
+    age +
+    ed_level +
+    years_code_pro +
+    ai_sent +
+    ai_complex +
+    (1|country),
+  data = data_edit
+)
+```
+
+```{r}
+logit_mod <- glmmTMB(
+  ai_threat ~
+    age +
+    ed_level +
+    years_code_pro +
+    ai_sent +
+    ai_complex +
+    (1|country),
+  data = data_edit,
+  family = binomial(link = "logit")
+)
+```
+
+## Linear vs Logit Model Comparison
+```{r}
+tab_model(
+  transform = NULL,
+  lm_mod, 
+  logit_mod,
+  title = "Varying Intercept Models for Perceived AI Threat by Stack Overflow Developers",
+  dv.labels = c("Linear Model Varying Intercept (AI Threat)", "Logit Model Varying Intercept(AI Threat)"),
+  pred.labels = c(
+    "(Intercept)",
+    "18-24 Years Old",
+    "25-34 Years Old",
+    "35-44 Years Old",
+    "45-54 Years Old",
+    "55-64 Years Old",
+    "65 Years or Older",
+    "Secondary School",
+    "Some College",
+    "Associate",
+    "Bachelor's",
+    "Master's",
+    "Professional Degree",
+    "Years Coding Professionally",
+    "AI Sentiment",
+    "Trust in AI for Complex Tasks"
+  ),
+  show.loglik = T,
+  show.aic = T,
+  show.r2 = F
+)
+```
+
+![](plot2.png)
+
+
+```{r}
+#| eval: false
+#| echo: false
+html2pdf(filename = "temp2.html", 
+  table_width = 13, 
+   silent = TRUE, 
+   style = TRUE, 
+   build_pdf = TRUE, 
+   clean = TRUE,
+   name_table = "table2")
+tex2Rmd("temp2.tex")
+```
+
+
+## Top and Bottom 5 Countries by Intercept
+```{r}
+country_re <- round(ranef(lm_mod)$country, digits = 3)
+
+country_re_df <- as_tibble(country_re, rownames = "country")
+
+ordered_re <- country_re_df %>%
+  arrange(desc(`(Intercept)`))
+
+ranked_re <- ordered_re %>%
+  mutate(rank = row_number())
+
+bottom_5_ranked <- head(ranked_re, 5)
+top_5_ranked <- tail(ranked_re, 5)
+
+top_bottom_10_ranked <- bind_rows(top_5_ranked, bottom_5_ranked) %>%
+  arrange(rank)
+
+kable(top_bottom_10_ranked, caption = "Top and Bottom 5 Country Intercepts")
+```
+
+## Intercept Graph
+```{r}
+sjPlot::plot_model(lm_mod, type="re", terms = selected_countries) + 
+  scale_x_discrete(limits=top_bottom_10_ranked$country) +
+  ggtitle(label = "AI Threat Intercepts by Country", subtitle = "Linear Model for Top and Bottom 5 Countries") +
+  ylab("Intercept + Confidence Interval") +
+  xlab("Country")
+```
+# Results / Interpretation / Conclusion
+
+## Models
+Looking at the model results it is clear from both the lower AIC and log-Likelihood that the linear model is a better model, which is somewhat surprising given the output is a binary variable. This may be due to the very imbalanced responses. Regardless in both models the same variables are significant. Someone aged 45-54 years old is more likely to view AI as a threat as compared to someone <18 years old with that amount being 0.07 of an increase holding all other variables constant. Additionally, somewhat consistently with the literature more educated people are less likely to view AI as a threat as compared to those with a primary school education. Those who trust AI for complex tasks are also significantly more likely to view AI as a threat holding all other variables constant (intercept of 0.02). This somewhat intuitively makes sense; if one believes AI to be competent at complex tasks then they will view it as more of a threat to their job. The IV of interest to the hypothesis, years coding professionally, proves to be significant and also a nearly zero effect. Someone who has more years coding professionally is less likely to view AI as a threat holding all other variables constant but the effect is *extremely* small. This to some extent supports the postulated hypothesis but the effects are so small that it's essentially meaningless. The intercept is also statistically significant which is good for the varying intercept portion of the model.
+
+## Table
+The table shows an interesting trend. The table about denotes the top and bottom 5 country intercepts. Interestingly, there seems to be some amount of regional similarity between the two groups (Asian countries vs Northern European), although the reasons for this are unclear. This would be an excellent avenue for further research, in addition to mapping trends using the survey from previous years as well. This doesn't really indicate any evidence to support the country hypothesis as neither group really captures any of the large AI players (China, US) at all. 
+
+## Conclusions
+Using multilevel modeling, on the Stack Overflow Developer Survey from 2024, results for the included variables show that education, years of coding experience, and trust in AI complex tasks have significant effects mostly in the negative direction indicating a lower likelihood to respond that AI is a threat to their job. Multilevel modeling was selected to interpret the many countries that are present in the sample. The actual substantial significance of these effects however is extremely small and nearly negligible, particularly for years of professional coding experience. Additionally between countries there is some interesting variation, however the interpretability of this variation is diffuclt and requires further research or literature review. Overall these findings are novel and lead to clear further questioning. Including the "I'm not sure" response may provide further insight.
