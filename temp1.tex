@@ -1,0 +1,114 @@
+
+% This file was converted to LaTeX by Writer2LaTeX ver. 1.6.1
+% see http://writer2latex.sourceforge.net for more info
+\documentclass[a4paper]{article}
+\usepackage[paperheight=11in,paperwidth=8.5in]{geometry}
+\usepackage[ascii]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb,amsfonts,textcomp}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{color}
+\usepackage{array}
+\usepackage{supertabular}
+\usepackage{longtable}
+\usepackage{hhline}
+\usepackage{hyperref}
+\hypersetup{pdftex, colorlinks=true, linkcolor=blue, citecolor=blue, filecolor=blue, urlcolor=blue, pdftitle=, pdfauthor=, pdfsubject=, pdfkeywords=}
+\providecommand\textsubscript[1]{\ensuremath{{}_{\text{#1}}}}
+% Text styles
+\newcommand\textstyleStrongEmphasis[1]{\textbf{#1}}
+\makeatletter
+\newcommand\arraybslash{\let\\\@arraycr}
+\makeatother
+% Page layout (geometry)
+\setlength\voffset{-1in}
+\setlength\hoffset{-1in}
+\setlength\topmargin{0.7874in}
+\setlength\oddsidemargin{0.7874in}
+\setlength\textheight{10.118099in}
+\setlength\textwidth{6.6932993in}
+\setlength\footskip{0.0cm}
+\setlength\headheight{0cm}
+\setlength\headsep{0cm}
+% Footnote rule
+\setlength{\skip\footins}{0.0469in}
+\renewcommand\footnoterule{\vspace*{-0.0071in}\setlength\leftskip{0pt}\setlength\rightskip{0pt plus 1fil}\noindent\textcolor{black}{\rule{0.25\columnwidth}{0.0071in}}\vspace*{0.0398in}}
+% Pages styles
+\makeatletter
+\newcommand\ps@Standard{
+  \renewcommand\@oddhead{}
+  \renewcommand\@evenhead{}
+  \renewcommand\@oddfoot{}
+  \renewcommand\@evenfoot{}
+  \renewcommand\thepage{\arabic{page}}
+}
+\newcommand\ps@HTML{
+  \renewcommand\@oddhead{}
+  \renewcommand\@evenhead{}
+  \renewcommand\@oddfoot{}
+  \renewcommand\@evenfoot{}
+  \renewcommand\thepage{\arabic{page}}
+}
+\makeatother
+\pagestyle{Standard}
+\setlength\tabcolsep{1mm}
+\renewcommand\arraystretch{1.3}
+\title{}
+\author{}
+\date{}
+\begin{document}
+\clearpage\setcounter{page}{1}\pagestyle{HTML}
+{\centering
+ICC Models
+\par}
+
+\begin{flushleft}
+\tablefirsthead{}
+\tablehead{}
+\tabletail{}
+\tablelasttail{}
+\begin{longtable}{p{13em}lcccccc}
+\hline
+{\bfseries ~} &
+\multicolumn{3}{m{2.00946in}}{\centering{\bfseries Linear Model}} &
+\multicolumn{3}{m{2.16916in}}{\centering{\bfseries Logit Model}}\\
+{\itshape Predictors} &
+\centering{\itshape Estimates} &
+\centering{\itshape CI} &
+\centering{\itshape p} &
+\centering{\itshape Log-Odds} &
+\centering{\itshape CI} &
+\centering\arraybslash{\itshape p}\\\hline
+(Intercept) &
+\centering 0.16 &
+\centering 0.15~--~0.17 &
+\centering \textstyleStrongEmphasis{{\textless}0.001} &
+\centering {}-1.71 &
+\centering {}-1.80~--~-1.62 &
+\centering\arraybslash \textstyleStrongEmphasis{{\textless}0.001}\\
+\multicolumn{7}{m{6.3031597in}}{{\bfseries Random Effects}}\\
+$\sigma $\textsuperscript{2} &
+\multicolumn{3}{m{2.00946in}}{0.12} &
+\multicolumn{3}{m{2.16916in}}{3.29}\\
+$\tau $\textsubscript{00} &
+\multicolumn{3}{m{2.00946in}}{0.00 \textsubscript{country}} &
+\multicolumn{3}{m{2.16916in}}{0.16 \textsubscript{country}}\\
+ICC &
+\multicolumn{3}{m{2.00946in}}{0.02} &
+\multicolumn{3}{m{2.16916in}}{0.05}\\
+N &
+\multicolumn{3}{m{2.00946in}}{180 \textsubscript{country}} &
+\multicolumn{3}{m{2.16916in}}{180 \textsubscript{country}}\\\hline
+Observations &
+\multicolumn{3}{m{2.00946in}}{34854} &
+\multicolumn{3}{m{2.16916in}}{34854}\\
+Marginal R\textsuperscript{2} / Conditional R\textsuperscript{2} &
+\multicolumn{3}{m{2.00946in}}{0.000 / 0.024} &
+\multicolumn{3}{m{2.16916in}}{0.000 / 0.046}\\
+\label{table1}
+\end{longtable}
+\end{flushleft}
+
+\bigskip
+\end{document}
