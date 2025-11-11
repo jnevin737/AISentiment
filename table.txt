@@ -1,0 +1,148 @@
+\begin{longtable}{p{13em}lcccccc}
+\hline
+{\bfseries ~} &
+\multicolumn{3}{m{2.6629598in}}{\centering{\bfseries Linear Model Varying Intercept (AI Threat)}} &
+\multicolumn{3}{m{2.63096in}}{\centering{\bfseries Logit Model Varying Intercept(AI Threat)}}\\
+{\itshape Predictors} &
+\centering{\itshape Estimates} &
+\centering{\itshape CI} &
+\centering{\itshape p} &
+\centering{\itshape Log-Odds} &
+\centering{\itshape CI} &
+\centering\arraybslash{\itshape p}\\\hline
+(Intercept) &
+\centering 0.17 &
+\centering 0.10~--~0.24 &
+\centering \textstyleStrongEmphasis{{\textless}0.001} &
+\centering {}-1.70 &
+\centering {}-2.22~--~-1.18 &
+\centering\arraybslash \textstyleStrongEmphasis{{\textless}0.001}\\
+18-24 Years Old &
+\centering {}-0.01 &
+\centering {}-0.06~--~0.04 &
+\centering 0.768 &
+\centering {}-0.05 &
+\centering {}-0.45~--~0.35 &
+\centering\arraybslash 0.811\\
+25-34 Years Old &
+\centering 0.01 &
+\centering {}-0.04~--~0.06 &
+\centering 0.807 &
+\centering 0.07 &
+\centering {}-0.34~--~0.47 &
+\centering\arraybslash 0.751\\
+35-44 Years Old &
+\centering 0.04 &
+\centering {}-0.01~--~0.09 &
+\centering 0.141 &
+\centering 0.34 &
+\centering {}-0.07~--~0.76 &
+\centering\arraybslash 0.103\\
+45-54 Years Old &
+\centering 0.07 &
+\centering 0.01~--~0.12 &
+\centering \textstyleStrongEmphasis{0.019} &
+\centering 0.57 &
+\centering 0.13~--~1.01 &
+\centering\arraybslash \textstyleStrongEmphasis{0.011}\\
+55-64 Years Old &
+\centering 0.05 &
+\centering {}-0.01~--~0.11 &
+\centering 0.112 &
+\centering 0.38 &
+\centering {}-0.12~--~0.89 &
+\centering\arraybslash 0.140\\
+65 Years or Older &
+\centering 0.04 &
+\centering {}-0.04~--~0.13 &
+\centering 0.310 &
+\centering 0.26 &
+\centering {}-0.54~--~1.06 &
+\centering\arraybslash 0.522\\
+Secondary School &
+\centering {}-0.05 &
+\centering {}-0.10~--~0.01 &
+\centering 0.093 &
+\centering {}-0.33 &
+\centering {}-0.73~--~0.07 &
+\centering\arraybslash 0.110\\
+Some College &
+\centering {}-0.05 &
+\centering {}-0.10~--~0.00 &
+\centering 0.054 &
+\centering {}-0.37 &
+\centering {}-0.77~--~0.02 &
+\centering\arraybslash 0.062\\
+Associate &
+\centering {}-0.04 &
+\centering {}-0.10~--~0.02 &
+\centering 0.164 &
+\centering {}-0.28 &
+\centering {}-0.71~--~0.15 &
+\centering\arraybslash 0.197\\
+Bachelor's &
+\centering {}-0.06 &
+\centering {}-0.11~--~-0.01 &
+\centering \textstyleStrongEmphasis{0.031} &
+\centering {}-0.42 &
+\centering {}-0.80~--~-0.03 &
+\centering\arraybslash \textstyleStrongEmphasis{0.034}\\
+Master's &
+\centering {}-0.07 &
+\centering {}-0.12~--~-0.01 &
+\centering \textstyleStrongEmphasis{0.014} &
+\centering {}-0.49 &
+\centering {}-0.88~--~-0.10 &
+\centering\arraybslash \textstyleStrongEmphasis{0.014}\\
+Professional Degree &
+\centering {}-0.10 &
+\centering {}-0.15~--~-0.04 &
+\centering \textstyleStrongEmphasis{0.001} &
+\centering {}-0.79 &
+\centering {}-1.22~--~-0.36 &
+\centering\arraybslash \textstyleStrongEmphasis{{\textless}0.001}\\
+Years Coding Professionally &
+\centering {}-0.00 &
+\centering {}-0.00~--~-0.00 &
+\centering \textstyleStrongEmphasis{{\textless}0.001} &
+\centering {}-0.03 &
+\centering {}-0.03~--~-0.02 &
+\centering\arraybslash \textstyleStrongEmphasis{{\textless}0.001}\\
+AI Sentiment &
+\centering {}-0.00 &
+\centering {}-0.01~--~0.00 &
+\centering 0.354 &
+\centering {}-0.02 &
+\centering {}-0.07~--~0.03 &
+\centering\arraybslash 0.402\\
+Trust in AI for Complex Tasks &
+\centering 0.02 &
+\centering 0.01~--~0.02 &
+\centering \textstyleStrongEmphasis{{\textless}0.001} &
+\centering 0.15 &
+\centering 0.11~--~0.19 &
+\centering\arraybslash \textstyleStrongEmphasis{{\textless}0.001}\\
+\multicolumn{7}{m{7.0080595in}}{{\bfseries Random Effects}}\\
+$\sigma $\textsuperscript{2} &
+\multicolumn{3}{m{2.6629598in}}{0.12} &
+\multicolumn{3}{m{2.63096in}}{3.29}\\
+$\tau $\textsubscript{00} &
+\multicolumn{3}{m{2.6629598in}}{0.00 \textsubscript{country}} &
+\multicolumn{3}{m{2.63096in}}{0.13 \textsubscript{country}}\\
+ICC &
+\multicolumn{3}{m{2.6629598in}}{0.02} &
+\multicolumn{3}{m{2.63096in}}{0.04}\\
+N &
+\multicolumn{3}{m{2.6629598in}}{168 \textsubscript{country}} &
+\multicolumn{3}{m{2.63096in}}{168 \textsubscript{country}}\\\hline
+Observations &
+\multicolumn{3}{m{2.6629598in}}{24208} &
+\multicolumn{3}{m{2.63096in}}{24208}\\
+AIC &
+\multicolumn{3}{m{2.6629598in}}{17348.314} &
+\multicolumn{3}{m{2.63096in}}{19356.142}\\
+log-Likelihood &
+\multicolumn{3}{m{2.6629598in}}{{}-8656.157} &
+\multicolumn{3}{m{2.63096in}}{{}-9661.071}\\
+\label{table2}
+\end{longtable}
